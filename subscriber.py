@@ -1,4 +1,5 @@
 import cv2
+from datetime import datetime
 import zmq
 import base64
 import numpy as np
@@ -9,9 +10,12 @@ port = "5555"
 
 context = zmq.Context()
 footage_socket = context.socket(zmq.SUB)
-# footage_socket.connect ("tcp://localhost:%s" % port)
-footage_socket.connect ("tcp://raspberrypi.local:%s" % port)
-key = b'0123456789abcdef'
+footage_socket.connect ("tcp://localhost:%s" % port)
+# footage_socket.connect ("tcp://raspberrypi.local:%s" % port)
+now = datetime.now()
+current_time = now.strftime("%H")
+key = bytes('0123456789abcd' + current_time, 'utf-8')
+print(key)
 cipher = AES.new(key, AES.MODE_ECB)
 footage_socket.setsockopt_string(zmq.SUBSCRIBE, '')
 
@@ -29,4 +33,10 @@ while True:
     except KeyboardInterrupt:
         cv2.destroyAllWindows()
         break
+
+    except ValueError:
+        now = datetime.now()
+        current_time = now.strftime("%H")
+        key = bytes('0123456789abcd' + current_time, 'utf-8')
+        cipher = AES.new(key, AES.MODE_ECB)
     
