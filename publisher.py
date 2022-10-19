@@ -57,7 +57,13 @@ def key_change():
     time.sleep(3600)
 
 t1 = threading.Thread(target = video_streaming)
+t1.daemon = True # Kill thread when main program ends
 t2 = threading.Thread(target = key_change)
+t2.daemon = True
 
-t2.start()
-t1.start()
+try:
+    t2.start()
+    t1.start()
+finally:
+    t2.join()
+    t1.join()
