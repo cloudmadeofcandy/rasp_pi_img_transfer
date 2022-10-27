@@ -15,7 +15,6 @@ footage_socket.connect ("tcp://localhost:%s" % port)
 now = datetime.now()
 current_time = now.strftime("%H")
 key = bytes('0123456789abcd' + current_time, 'utf-8')
-print(key)
 cipher = AES.new(key, AES.MODE_ECB)
 footage_socket.setsockopt_string(zmq.SUBSCRIBE, '')
 
@@ -26,6 +25,7 @@ while True:
         frame = (unpad(frame, BLOCK_SIZE))
         npimg = np.frombuffer(frame, dtype=np.uint8)
         source = cv2.imdecode(npimg, 1)
+        # imageRGB = source
         imageRGB = cv2.cvtColor(source , cv2.COLOR_BGR2RGB)
         cv2.imshow("Stream", imageRGB)
         cv2.waitKey(1)
